@@ -1,13 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+import streamlit as st
 import numpy as np
 import pickle
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from googleapiclient.discovery import build
 import logging
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -43,16 +40,6 @@ def suggest_playlist(text):
         'relaxed': 'relaxing chill songs playlist',
         'nervous': 'calming relaxing songs playlist',
         'worried': 'calming study songs playlist',
-        'disgust': 'dark songs playlist',
-        'amusement': 'entertaining fun songs playlist',
-        'admiration': 'inspirational songs playlist',
-        'pride': 'motivational songs playlist',
-        'shame': 'emotional songs playlist',
-        'euphoria': 'euphoria party songs playlist',
-        'boredom': 'playlist for chill vibes',
-        'nostalgia': 'nostalgic old songs playlist',
-        'thrill': 'thrilling music playlist',
-        'blessed': 'blessed songs playlist',
     }
     
     # Get search query based on emotion
@@ -79,20 +66,16 @@ def suggest_playlist(text):
     
     return emotion, playlist_title, playlist_url
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Streamlit app
+st.title('MyMusicTherapist')
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    text = request.form['text']
-    emotion, playlist_title, playlist_url = suggest_playlist(text)
-    response = {
-        'emotion': emotion,
-        'playlist_title': playlist_title,
-        'playlist_url': playlist_url
-    }
-    return jsonify(response)
+# User input
+text = st.text_area('Enter your thoughts:', '')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if st.button('Submit'):
+    if text:
+        emotion, playlist_title, playlist_url = suggest_playlist(text)
+        st.write(f"**Detected Emotion:** {emotion}")
+        st.write(f"**Suggested Playlist:** [ {playlist_title} ]({playlist_url})")
+    else:
+        st.error("Please enter some text.")
