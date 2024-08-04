@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyMusicTherapist</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">My Music Therapist</h1>
+        <form id="input-form" class="mt-4">
+            <div class="form-group">
+                <label for="text">Enter your thoughts:</label>
+                <textarea class="form-control" id="text" name="text" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="result" class="mt-4" style="display: none;">
+            <h3>Detected Emotion: <span id="emotion"></span></h3>
+            <p>Suggested Playlist: <a href="#" id="playlist-link" target="_blank"><span id="playlist-title"></span></a></p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#input-form').on('submit', function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+                $.post('/predict', formData, function(response) {
+                    $('#emotion').text(response.emotion);
+                    $('#playlist-title').text(response.playlist_title);
+                    $('#playlist-link').attr('href', response.playlist_url);
+                    $('#result').show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
